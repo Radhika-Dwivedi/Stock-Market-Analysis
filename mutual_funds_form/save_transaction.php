@@ -14,26 +14,26 @@ if ($conn->connect_error) {
 }
 
 // Initialize variables to store form data
-$transactionDate = $mf_name = $quantity = $nav = $netAmount = $stampCharge = $grossAmount = $dividend = '';
+$transaction_date = $mf_name = $quantity = $nav = $net_amount = $stamp_charge = $gross_amount = $dividend = '';
 
 // Check if the form is submitted via POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate and sanitize input data
-    $transactionDate = mysqli_real_escape_string($conn, $_POST['transactionDate']);
-    $mf_name = mysqli_real_escape_string($conn, $_POST['mutual_funds_name']);
+    $transaction_date = mysqli_real_escape_string($conn, $_POST['transactionDate']);
+    $mf_name = mysqli_real_escape_string($conn, $_POST['mfName']);
     $quantity = mysqli_real_escape_string($conn, $_POST['quantity']);
     $nav = mysqli_real_escape_string($conn, $_POST['nav']);
     $dividend = mysqli_real_escape_string($conn, $_POST['dividend']);
 
     // Calculate netAmount, stampCharge, and grossAmount
-    $netAmount = $quantity * $nav;
-    $stampCharge = $netAmount * 0.005; // Assuming 0.5% stamp charge
-    $grossAmount = $netAmount + $stampCharge + $dividend;
+    $net_amount = $quantity * $nav;
+    $stamp_charge = $net_amount * 0.005; // Assuming 0.5% stamp charge
+    $gross_amount = $net_amount + $stamp_charge + $dividend;
 
     // Prepare SQL insert statement using prepared statements
-    $stmt = $conn->prepare("INSERT INTO mutual_funds_transactions (transaction_date, mutual_funds_name, quantity, nav, net_amount, stamp_charge, gross_amount, dividend) 
+    $stmt = $conn->prepare("INSERT INTO mutual_funds_transactions (transaction_date, mf_name, quantity, nav, net_amount, stamp_charge, gross_amount, dividend) 
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssiddddd", $transactionDate, $mf_name, $quantity, $nav, $netAmount, $stampCharge, $grossAmount, $dividend);
+    $stmt->bind_param("ssiddddd", $transaction_date, $mf_name, $quantity, $nav, $net_amount, $stamp_charge, $gross_amount, $dividend);
 
     if ($stmt->execute()) {
         // Fetch the inserted record for display
@@ -41,12 +41,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->close();
 
         // Select the inserted record
-        $sql_select = "SELECT * FROM mutual_funds_transactions WHERE id = $last_id";
+        $sql_select = "SELECT `id`, `transaction_date`, `mf_name`, `quantity`, `nav`, `net_amount`, `stamp_charge`, `gross_amount`, `created_at`, `dividend` 
+                       FROM mutual_funds_transactions WHERE id = $last_id";
         $result = $conn->query($sql_select);
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            // Display the inserted data
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -100,20 +100,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                    <li class="nav-item">
+                        <li class="nav-item">
                             <a href="index.php" class="nav-link">
                                 <i class="nav-icon fas fa-briefcase"></i>
                                 <p>Home</p>
                             </a>
                         </li>
-                       
                         <li class="nav-item">
-                            <a href="Ledger.php" class="nav-link">
+                            <a href="../Ledger.php" class="nav-link">
                                 <i class="nav-icon fas fa-briefcase"></i>
                                 <p>Ledger</p>
                             </a>
-                        </li>   
-                    <li class="nav-item">
+                        </li>
+                        <li class="nav-item">
                             <a href="../portfolio.php" class="nav-link">
                                 <i class="nav-icon fas fa-briefcase"></i>
                                 <p>Portfolio</p>
@@ -163,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <p>New record created successfully</p>
                                     <p>Transaction ID: <?php echo $row["id"]; ?></p>
                                     <p>Transaction Date: <?php echo $row["transaction_date"]; ?></p>
-                                    <p>Mutual Fund Name: <?php echo $row["mutual_funds_name"]; ?></p>
+                                    <p>Mutual Fund Name: <?php echo $row["mf_name"]; ?></p>
                                     <p>Quantity: <?php echo $row["quantity"]; ?></p>
                                     <p>NAV: <?php echo $row["nav"]; ?></p>
                                     <p>Net Amount: <?php echo $row["net_amount"]; ?></p>
@@ -173,7 +172,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </div>
                                 <div class="card-footer">
                                     <a href="../mutual_funds_form/form.php" class="btn btn-secondary">Back to Form</a>
-                                    <a href="../portfolio.php" class="btn btn-primary">Portfolio</a>
+                                    <a href="../portfolio/mutual_funds_portfolio.php" class="btn btn-primary">Portfolio</a>
                                 </div>
                             </div>
                         </div>

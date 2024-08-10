@@ -1,3 +1,43 @@
+<?php
+// Start the session
+session_start();
+
+// Include database connection
+include('db.php');
+
+// Check if the user is already logged in
+if (isset($_SESSION['user_id'])) {
+    header('Location: index.php'); // Redirect to the home page if already logged in
+    exit();
+}
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Get the form inputs
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Query the database to check user credentials
+    $stmt = $conn->prepare("SELECT id, full_name FROM users WHERE email = ? AND password = ?");
+    $stmt->bind_param("ss", $email, $password); // Assuming passwords are stored as plain text (consider hashing in production)
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows == 1) {
+        // User found, set session variables
+        $user = $result->fetch_assoc();
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_name'] = $user['full_name'];
+
+        // Redirect to home page
+        header('Location: index.php');
+        exit();
+    } else {
+        $error = "Invalid email or password.";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,7 +95,19 @@
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-item">
+                    <li class="nav-item">
+                            <a href="index.php" class="nav-link">
+                                <i class="nav-icon fas fa-briefcase"></i>
+                                <p>Home</p>
+                            </a>
+                        </li>
+                    <li class="nav-item">
+                            <a href="Ledger.php" class="nav-link">
+                                <i class="nav-icon fas fa-briefcase"></i>
+                                <p>Ledger</p>
+                            </a>
+                        </li>    
+                    <li class="nav-item">
                             <a href="portfolio/portfolio.html" class="nav-link">
                                 <i class="nav-icon fas fa-briefcase"></i>
                                 <p>Portfolio</p>
@@ -98,6 +150,11 @@
                                 </div>
                                 <form id="loginForm" action="login.php" method="POST">
                                     <div class="card-body">
+                                        <?php if (isset($error)): ?>
+                                            <div class="alert alert-danger" role="alert">
+                                                <?php echo $error; ?>
+                                            </div>
+                                        <?php endif; ?>
                                         <div class="form-group">
                                             <label for="email">Email</label>
                                             <input type="email" class="form-control" id="email" name="email" required>

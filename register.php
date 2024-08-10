@@ -1,3 +1,48 @@
+<?php
+session_start();
+include('db.php');
+
+// Check if the user is already logged in
+if (isset($_SESSION['username'])) {
+    header("Location: index.php"); // Redirect to home page if already logged in
+    exit();
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $full_name = $_POST['fullName'];
+    $email = $_POST['email'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash password for security
+    $mobile_number = $_POST['mobileNumber'];
+    $country = $_POST['country'];
+
+    // Check if email already exists
+    $sql = "SELECT id FROM users WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows > 0) {
+        echo "Email already registered.";
+    } else {
+        // Insert new user into the database
+        $sql = "INSERT INTO users (full_name, email, password, mobile_number, country) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssss", $full_name, $email, $password, $mobile_number, $country);
+        
+        if ($stmt->execute()) {
+            $_SESSION['username'] = $full_name;
+            header("Location: index.php");
+        } else {
+            echo "Error: " . $stmt->error;
+        }
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +55,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- AdminLTE CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/css/adminlte.min.css">
-    
 </head>
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -41,7 +85,6 @@
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
             <a href="index.php" class="brand-link">
-                
                 <span class="brand-text font-weight-light">FinTrackPro</span>
             </a>
 
@@ -49,10 +92,21 @@
             <div class="sidebar">
                 <!-- Sidebar user panel (optional) -->
                 
-
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <li class="nav-item">
+                            <a href="index.php" class="nav-link">
+                                <i class="nav-icon fas fa-briefcase"></i>
+                                <p>Home</p>
+                            </a>
+                        </li>
+                    <li class="nav-item">
+                            <a href="Ledger.php" class="nav-link">
+                                <i class="nav-icon fas fa-briefcase"></i>
+                                <p>Ledger</p>
+                            </a>
+                        </li>
                     <li class="nav-item">
                             <a href="portfolio/portfolio.html" class="nav-link">
                                 <i class="nav-icon fas fa-briefcase"></i>
@@ -65,9 +119,6 @@
                                 <p>Logout</p>
                             </a>
                         </li>
-                     
-
-                    
                         <li class="nav-item">
                             <a href="#" class="nav-link">Form</a>
                             <ul class="nav">
@@ -79,21 +130,12 @@
                                 </li>
                             </ul>
                         </li>
-                       
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
             </div>
             <!-- /.sidebar -->
         </aside>
-
-            
-         
-    
-
-    <!-- Navigation Bar -->
-  
-
 
     <!-- Sign Up Form -->
     <div class="container mt-5">
@@ -147,6 +189,15 @@
                 </div>
             </div>
         </div>
+    </div>
+    
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <div class="float-right d-none d-sm-inline">
+                FinTrackPro
+            </div>
+            <strong>© 2024 <a href="#">FinTrackPro</a>.</strong> All rights reserved.
+        </footer>
     </div>
 
     <!-- Bootstrap JS and FontAwesome -->

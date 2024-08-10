@@ -144,17 +144,17 @@ $conn->close();
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item">
-                    <a href="index.php" class="nav-link">Home</a>
+                    <a href="../index.php" class="nav-link">Home</a>
                 </li>
             </ul>
 
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a href="login.php" class="nav-link">Login</a>
+                    <a href="../login.php" class="nav-link">Login</a>
                 </li>
                 <li class="nav-item">
-                    <a href="register.php" class="nav-link">Sign Up</a>
+                    <a href="../register.php" class="nav-link">Sign Up</a>
                 </li>
             </ul>
         </nav>
@@ -163,7 +163,7 @@ $conn->close();
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="index.php" class="brand-link">
+            <a href="../index.php" class="brand-link">
                 <span class="brand-text font-weight-light">FinTrackPro</span>
             </a>
 
@@ -172,8 +172,20 @@ $conn->close();
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-item">
-                            <a href="portfolio.php" class="nav-link">
+                    <li class="nav-item">
+                            <a href="index.php" class="nav-link">
+                                <i class="nav-icon fas fa-briefcase"></i>
+                                <p>Home</p>
+                            </a>
+                        </li>
+                    <li class="nav-item">
+                            <a href="Ledger.php" class="nav-link">
+                                <i class="nav-icon fas fa-briefcase"></i>
+                                <p>Ledger</p>
+                            </a>
+                        </li>    
+                    <li class="nav-item">
+                            <a href="portfolio/portfolio.html" class="nav-link">
                                 <i class="nav-icon fas fa-briefcase"></i>
                                 <p>Portfolio</p>
                             </a>
@@ -323,13 +335,12 @@ $conn->close();
         <!-- /.content-wrapper -->
 
         <!-- Main Footer -->
+    
         <footer class="main-footer">
-            <strong>&copy; 2023 <a href="https://adminlte.io">AdminLTE.io</a>.</strong>
+            <strong>&copy; 2023 <a href="#">FinTrackPro</a>.</strong>
             All rights reserved.
-            <div class="float-right d-none d-sm-inline-block">
-                <b>Version</b> 3.2.0
-            </div>
         </footer>
+        
     </div>
     <!-- ./wrapper -->
 

@@ -91,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </li>
                        
                         <li class="nav-item">
-                            <a href="Ledger.php" class="nav-link">
+                            <a href="../Ledger.php" class="nav-link">
                                 <i class="nav-icon fas fa-briefcase"></i>
                                 <p>Ledger</p>
                             </a>
